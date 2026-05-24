@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>AR Calca — Dibujo en Realidad Aumentada</title>
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Hojas de estilo -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       SPLASH / PANTALLA DE INICIO
+  ═══════════════════════════════════════════ -->
+  <div id="splash">
+    <div class="splash-inner">
+      <div class="splash-icon">◈</div>
+      <h1>AR<span>Calca</span></h1>
+      <p>Proyecta imágenes en el espacio real.<br>Para tatuajes, murales y trazos.</p>
+      <button id="btn-start">Iniciar cámara</button>
+      <small>Requiere cámara trasera y HTTPS</small>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       CONTENEDOR DE CÁMARA (video real)
+  ═══════════════════════════════════════════ -->
+  <video id="camera-feed" autoplay playsinline muted></video>
+
+  <!-- ═══════════════════════════════════════════
+       CANVAS THREE.JS (overlay AR)
+  ═══════════════════════════════════════════ -->
+  <canvas id="ar-canvas"></canvas>
+
+  <!-- ═══════════════════════════════════════════
+       CANVAS CUADRÍCULA (overlay extra)
+  ═══════════════════════════════════════════ -->
+  <canvas id="grid-canvas"></canvas>
+
+  <!-- ═══════════════════════════════════════════
+       UI PRINCIPAL
+  ═══════════════════════════════════════════ -->
+  <div id="ui-overlay">
+
+    <!-- Barra superior -->
+    <div id="top-bar">
+      <span id="status-label">Sin imagen</span>
+      <div id="top-actions">
+        <button class="icon-btn" id="btn-upload" title="Cargar imagen">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-grid" title="Cuadrícula">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-lock" title="Bloquear posición">
+          <svg id="lock-icon-open" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          <svg id="lock-icon-closed" viewBox="0 0 24 24" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel de controles (visible cuando hay imagen) -->
+    <div id="controls-panel" class="hidden">
+
+      <!-- Transparencia -->
+      <div class="ctrl-row">
+        <label>Opacidad</label>
+        <input type="range" id="slider-opacity" min="5" max="100" value="85" />
+        <span id="val-opacity">85%</span>
+      </div>
+
+      <!-- Escala manual -->
+      <div class="ctrl-row">
+        <label>Escala</label>
+        <input type="range" id="slider-scale" min="5" max="300" value="100" />
+        <span id="val-scale">100%</span>
+      </div>
+
+      <!-- Rotación manual -->
+      <div class="ctrl-row">
+        <label>Rotación</label>
+        <input type="range" id="slider-rotate" min="0" max="360" value="0" />
+        <span id="val-rotate">0°</span>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="ctrl-actions">
+        <button id="btn-reset" class="action-btn secondary">Restablecer</button>
+        <button id="btn-anchor" class="action-btn primary">Anclar aquí</button>
+      </div>
+    </div>
+
+    <!-- Crosshair central (guía de posicionamiento) -->
+    <div id="crosshair">
+      <div class="ch-h"></div>
+      <div class="ch-v"></div>
+    </div>
+
+    <!-- Hint táctil -->
+    <div id="touch-hint" class="hidden">
+      <span>Pellizca para escalar · Gira con 2 dedos · Arrastra para mover</span>
+    </div>
+
+  </div>
+
+  <!-- Input oculto para subir imagen -->
+  <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" style="display:none" />
+
+  <!-- ═══════════════════════════════════════════
+       MODAL: PERMISOS / ERRORES
+  ═══════════════════════════════════════════ -->
+  <div id="modal-error" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-icon">⚠</div>
+      <h2 id="modal-title">Error de cámara</h2>
+      <p id="modal-msg">No se pudo acceder a la cámara trasera.</p>
+      <button id="modal-close" class="action-btn primary">Reintentar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
