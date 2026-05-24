@@ -7,7 +7,7 @@
 'use strict';
 
 /* ─────────────────────────────────────────────────────────────
-   ESTADO GLOBAL
+   ESTADO GLOBAl
    ───────────────────────────────────────────────────────────── */
 const STATE = {
   started:      false,   // cámara activa
