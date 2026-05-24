@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>AR Calca</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-inner">
+      <div class="splash-icon">◈</div>
+      <h1>AR<span>Calca</span></h1>
+      <p>Proyecta imágenes fijas en el espacio real.</p>
+      <button id="btn-start">Iniciar AR</button>
+      <small id="xr-status">Verificando ARCore...</small>
+    </div>
+  </div>
+
+  <!-- FALLBACK: modo cámara simple (si no hay WebXR) -->
+  <video id="camera-feed" autoplay playsinline muted></video>
+  <canvas id="ar-canvas"></canvas>
+  <canvas id="grid-canvas"></canvas>
+
+  <!-- CANVAS WebXR (Three.js lo maneja) -->
+  <canvas id="webxr-canvas"></canvas>
+
+  <!-- UI -->
+  <div id="ui-overlay">
+    <div id="top-bar">
+      <span id="status-label">Sin imagen</span>
+      <div id="top-actions">
+        <button class="icon-btn" id="btn-upload" title="Cargar imagen">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-grid" title="Cuadrícula">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-lock" title="Bloquear">
+          <svg id="lock-icon-open" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          <svg id="lock-icon-closed" viewBox="0 0 24 24" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="controls-panel" class="hidden">
+      <div class="ctrl-row">
+        <label>Opacidad</label>
+        <input type="range" id="slider-opacity" min="5" max="100" value="85" />
+        <span id="val-opacity">85%</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Escala</label>
+        <input type="range" id="slider-scale" min="5" max="300" value="100" />
+        <span id="val-scale">100%</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Rotación</label>
+        <input type="range" id="slider-rotate" min="0" max="360" value="0" />
+        <span id="val-rotate">0°</span>
+      </div>
+      <div class="ctrl-actions">
+        <button id="btn-reset" class="action-btn secondary">Restablecer</button>
+        <button id="btn-anchor" class="action-btn primary">Anclar aquí</button>
+      </div>
+    </div>
+
+    <!-- Retícula AR (guía de posicionamiento en suelo/pared) -->
+    <div id="reticle-hint" class="hidden">
+      <div id="reticle-ring"></div>
+      <span>Apunta a una superficie y toca para anclar</span>
+    </div>
+
+    <div id="crosshair">
+      <div class="ch-h"></div>
+      <div class="ch-v"></div>
+    </div>
+
+    <div id="touch-hint" class="hidden">
+      <span>Pellizca · Gira · Arrastra</span>
+    </div>
+  </div>
+
+  <input type="file" id="file-input" accept="image/*" style="display:none" />
+
+  <div id="modal-error" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-icon">⚠</div>
+      <h2 id="modal-title">Error</h2>
+      <p id="modal-msg"></p>
+      <button id="modal-close" class="action-btn primary">OK</button>
+    </div>
+  </div>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
